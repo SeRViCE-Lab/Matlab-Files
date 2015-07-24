@@ -1,0 +1,4 @@
+#Exclude all jpegs and kinect figures
+*.jpg
+*.png
+*.fig
