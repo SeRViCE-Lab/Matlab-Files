@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/engdemo.dir/engdemo.cpp.o  -o engdemo  -L/usr/local/MATLAB/R2015a/bin/glnxa64 -rdynamic -leng -lmx -lmex -Wl,-rpath,/usr/local/MATLAB/R2015a/bin/glnxa64 

@@ -1,0 +1,12 @@
+clc; close all;
+cd('/home/lex/Documents/Matlab_Files/kalman_data')
+measure = load('rawmeasures.csv');
+time = linspace(1, length(measure), length(measure));
+facepoints = 680 * ones(length(time));
+subplot(311)
+plot(time, measure, 'b-.'); hold on;
+xlabel('Time(sec)'); ylabel('Depth measurements (mm)');
+legend('Raw Measurements', 'location', 'best')
+%ylim([980 1100]), xlim([0 800]);
+title('Raw Measurements from Kinect X-box. Ground Truth = 680mm');
+hold off;
