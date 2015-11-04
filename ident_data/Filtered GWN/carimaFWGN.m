@@ -385,3 +385,13 @@ pause(4)
 disp('Show 95% confidence intervals')
 
 showConfidence(p_arimax, 50)
+
+%Save all important results in a struct.mat file
+save('fwgn.mat', 'mdlarmax'), 
+save('fwgn.mat', 'mdlarimax', 'mdlss',...
+    'ss_arimax', '-append');
+save('fwgn.mat', 'srs', ...
+    'input', 'output', '-append');
+
+%check if file contains what youi want
+whos('-file', 'fwgn.mat')
