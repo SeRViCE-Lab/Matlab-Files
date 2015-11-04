@@ -1,11 +1,9 @@
 %% Data Preprocessing
 %
-clc, clear
-close all
-
+clc,
 format compact;
 
-Ts = 1;              %Sampling time for all three expts
+Ts = 0;              %Sampling time for all three expts
 
 cd('/home/lex/Documents/Matlab_Files/ident_data/Sawtooth Waveform')
 input_swt = load('input_sawtooth.csv');

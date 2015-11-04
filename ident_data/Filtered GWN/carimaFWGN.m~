@@ -1,16 +1,21 @@
 %% Identification of SRS Model (Summer/Fall 2015)
 % © Olalekan Ogunmolu, 2015
-clear all; clc
-cd('/home/lex/Documents/Matlab_Files/ident_data/UWGN')
+ clear all; clc
+cd('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN')
 
-Ts = .167/3;            %Sampling Time
+format short
 
-input = load('inputUGWN.csv');
-output = load('outputUGWN.csv');
+input = load('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN/inputUGWN3.csv');
+output = load('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN/outputUGWN3.csv');
+powspec = load('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN/powspec.csv');
+crest = load('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN/crest.csv');
+autoc = load('/home/lex/Documents/Matlab_Files/ident_data/Filtered GWN/acf.csv');
+
+Ts = 48/1000;
 
 srs = iddata(output(1:length(input)), input, Ts);
 
-srs
+present(srs);
 
 %give names to the input and output channels and Time units
 
@@ -19,27 +24,61 @@ srs.OutputName = 'Fused Measurement';
 srs.TimeUnit   = 'seconds';
 srs.InputUnit  = 'mA';
 srs.OutputUnit = 'mm';
-srs.ExperimentName = 'Uniform Gaussian White Noise Expt';
+srs.ExperimentName = 'Linear Filtered Gaussian White Noise Expt';
 
 % split dataset in 60:40 ratio for estimation
 [m,n] = size(srs)
 srstest = srs(1:0.6*m);
 srstrain = srs(1:0.4*m);
-%%
+%% Input Signal Properties
+format compact;
+disp('Let''s see the power spectrum of the excitation signal for a minute');
+plot(powspec),
+legend('Power Spectral Density from LabVIEW''s FFT');
+
+fprintf('\nPress any key to continue\n')
+pause()
+
+plot(crest),
+legend('Crest of filtered white Gaussian noise signal')
+
+fprintf('\nPress any key to continue\n')
+pause(),
+
+plot(autoc),
+legend('autocorrelation of input excitation signal')
+
+
+%% 
+clf
 time = srs.Ts * m;              %actual time for id expt
-ptest = plot(srstest(4000:4500)), 
+ptest = plot(srstest(4000:4200)), 
+%xlim([0 203]); % 692.1 692.6]),
+legend('Testing Data TIme Series');
+
+
+fprintf('\nPress any key to plot Validation Time Series\n\n');
+pause
 
 clf
 ptrain = plot(srstrain(600:1100)),
+%xlim([0 53]) ;%axis([0 200 697.1 697.9]),
+legend('Validation Time Series')
 
-%% Note. Do not detrend data. Input is already white.
-%data is not zero mean.% So remove constant levels and make the data zero mean.
-%srs = detrend(srs);
+% data is not zero mean. So remove constant levels and make the data zero mean.
+srs = detrend(srs);
 
 srstest = srs(1:0.6*m);
 srstrain = srs(1:0.4*m);
 
 plot(srstest(4000:4500));
+legend('Testing Data TIme Series');
+
+fprintf('\nPress any key to plot Validation Time Series\n\n');
+pause
+
+plot(srstrain(1000:2000)),
+legend('Validation Time Series')
 
 
 %% Estimating Nonparametric Models
@@ -55,6 +94,7 @@ fprintf('\nPress spacebar key to continue\n \nEstimate impulse response of data\
 pause, clf;
 
 showConfidence(impulseplot(srsii), 3)
+grid on
 
 % there is a 70-sample delay (dead-time) before the output responds to
 % input or an 18-sample delay if we use the negative impulse function.
@@ -91,7 +131,7 @@ pause,
 
 clf
 wmin = 0.441; wmax = 4.53;   %choose desirable range for spectral plot
-spectrum(sy,su, {wmin, wmax});
+spectrum(sy,su)%, {wmin, wmax});
 legend({'Output','Input'})
 grid on
 %the input has very little relative energy above 2.66 rad/sec while
@@ -153,6 +193,22 @@ lags  = 30;
 
 clf
 resid(mdlss, srstrain, mode, lags)
+
+fprintf('\nShow residue from input to residue using impulse response\n')
+fprintf('\n Press any key \n');
+pause
+
+clf;
+resid(mdlss, srstrain, 'IR');
+legend('Residuals between Model and Data using impulse response model')
+
+fprintf('\nShow residue from input to residue using fir response\n')
+fprintf('\n Press any key \n');
+pause
+
+clf;
+g = resid(mdlss, srstrain, 'FR');
+legend('Residuals between Model and Data using freq response')
 %% ARMAX Model
 %I'll try with a 2nd order armax model for the test data and see if I can get
 %good dynamics
@@ -187,20 +243,22 @@ pause(2),
 
 clf
 fprintf('\nPress spacebar key to continue\n'),
-pause(1),
+pause(3),
 
 %check if model rates well with validation data
 compare(srstrain, mdlarmax)                 %fit is 22.13%
 
+pause(5)
+
 resid(mdlarmax, srstrain, 'IR')
 legend('impulse response from the input to the residuals')
 
-pause(2)
+pause(5)
 
 resid(mdlarmax, srstrain, 'corr')
 legend('Correlation analysis performed')
 
-pause(2)
+pause(5)
 
 %frequency response from input to residue
 resid(mdlarmax, srstrain, 'fr')
@@ -278,20 +336,20 @@ legend('ARIMAX Model', 'location', 'best')
 pause(2)
 
 clf;
-disp('Show Pole-Zero Map for mdlarmax and mdlarimax')
+fprintf('\n\nShow Pole-Zero Map for mdlarmax and mdlarimax')
 
 iopzmap(mdlarmax)
 legend('Pole-Zero Map for mdlarmax')
 
-pause(0.4)
+pause(5)
 
 clf
 iopzplot(mdlarimax)
 legend('Pole-Zero Map for mdlarimax')
 
-pause(0.4)
+pause(5)
 clf;
-disp('Show Pole-zero map for ss estimated model')
+fprintf('\n\nShow Pole-zero map for ss estimated model')
 iopzmap(mdlss)
 legend('Pole-Zero Map for State Space armax Model')
 
@@ -300,7 +358,7 @@ clf, clc
 p_ss = bodeplot(mdlss), 
 legend('Bode plot for open-loop ss estimated model', 'location', 'best')
 
-pause(0.4)
+pause(4)
 
 disp('Show 95% confidence intervals')
 
@@ -311,7 +369,7 @@ clf, clc
 p_armax = bodeplot(mdlarmax), 
 legend('Bode plot for open-loop armax estimated model', 'location', 'best')
 
-pause(0.4)
+pause(4)
 
 disp('Show 95% confidence intervals')
 
@@ -322,9 +380,8 @@ clf, clc
 p_arimax = bodeplot(mdlarimax), 
 legend('Bode plot for open-loop arimax estimated model', 'location', 'best')
 
-pause(0.4)
+pause(4)
 
 disp('Show 95% confidence intervals')
 
 showConfidence(p_arimax, 50)
-
