@@ -219,7 +219,14 @@ end
 [m,n] = size(srsd);
 srsdtest = srsd(1:0.6*m);
 srsdtrain = srsd(1:0.4*m);
+save('fwgn.mat', 'mdlarmax'), 
+save('fwgn.mat', 'mdlarimax', 'mdlss',...
+    'ss_arimax', '-append');
+save('fwgn.mat', 'srs', ...
+    'input', 'output', '-append');
 
+%check if file contains what youi want
+whos('-file', 'fwgn.mat')
 % Trying to find a good structure for estimated data
 Imp2 = impulseest(srsdtest);
 showConfidence(impulseplot(Imp2, 30), 3);
@@ -328,3 +335,15 @@ disp('Show 95% confidence intervals')
 
 showConfidence(p_arimax, 50)
 
+% convert arimax idpoly to state space 
+ss_arimax = idss(mdlarimax);
+
+%Save all important results in a struct.mat file
+save('wgn.mat', 'mdlarmax'), 
+save('wgn.mat', 'mdlarimax', 'mdlss',...
+    'ss_arimax', '-append');
+save('wgn.mat', 'srs', ...
+    'input', 'output', '-append');
+
+%check if file contains what youi want
+whos('-file', 'wgn.mat')

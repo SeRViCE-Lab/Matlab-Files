@@ -386,6 +386,9 @@ disp('Show 95% confidence intervals')
 
 showConfidence(p_arimax, 50)
 
+% convert arimax idpoly to state space 
+ss_arimax = idss(mdlarimax);
+
 %Save all important results in a struct.mat file
 save('fwgn.mat', 'mdlarmax'), 
 save('fwgn.mat', 'mdlarimax', 'mdlss',...
