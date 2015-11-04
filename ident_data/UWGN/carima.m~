@@ -162,7 +162,7 @@ opt.EstCovar = true;
 opt.Display   = 'on';
 opt.Regularization.Lambda = 100;
 opt.Regularization.R = [1000];
-opt.Regularization.Nominal = 'zero';
+opt.Regularization.Nominal = 'model';
 
 Nu = [10];                     %input offset to ignore, 
 Ne = [1];                     %Number of experiments
@@ -249,15 +249,4 @@ compare(srstest, mdlss, mdlarmax, mdlarmax2, M)
 mdlarimax = armax(srstest, [na,  nb ,  nc,   nk], 'IntegrateNoise', true, opt);
 %Fit to estimation data: 96.56%, FPE: 0.0119994
 
-compare(mdlarimax, srstrain, mdlarmax, M);
-
-%check if model rates well with validation data
-compare(srstrain, mdlarimax)                 %fit is 22.13%
-
-resid(mdlarimax, srstrain, 'IR')
-legend('impulse response from the input to the residuals')
-
-pause(2)
-
-resid(mdlarimax, srstrain, 'corr')
-legend('Correlation analysis performed')
+compare(mdlarimax, srstrain
