@@ -177,7 +177,7 @@ pause,
   fprintf('   (c)  Input whiteness test\n\n');
   
   subplot(111),
-                        [e,s]=resid_acse(z2,th);
+                        [e,s]=resid(z2,th);
                         
   fprintf('        [Press ANY key to continue...]\n\n');
   pause,
@@ -191,7 +191,7 @@ pause,
 %
   fprintf('   4.3  Cross correlation function between\n');
   fprintf('        the prewhitened input and output\n\n');
-  ccf_opt_ipt           =   crosscorr_acse(prewhitened_opt,e,'coeff');
+  ccf_opt_ipt           =   crosscorr(prewhitened_opt,e,'coeff');
   x1                    =   ccf_opt_ipt(296:320,1);
   time                  =   [0 : 24];
   
@@ -225,7 +225,7 @@ cross_in            = [z2];  %No Periodic extension for input;
 cross_out           = [z1]; % No Periodic extension for output;
 subplot(111),
 
-spectrum_acse(cross_in,cross_out);
+spectrum(cross_in,cross_out);
 fprintf('        [Press ANY key to continue...]\n\n');
 pause,
 fprintf(' \n');
@@ -276,7 +276,7 @@ while reply         ~=  0
 % Deterministic output
 %
   fprintf('   (b)  Model predicted outputs\n\n');
-  deterministic_opt = idsim_acse(z2,th);
+  deterministic_opt = idsim(z2,th);
   
   subplot(111),
   
